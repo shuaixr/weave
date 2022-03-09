@@ -30,8 +30,9 @@ export const TasksSlice = createSlice({
         Type: action.payload.type,
       };
     },
-    setSelectedIndexAction: (state, action) =>
-      (state.selectedIndex = action.payload),
+    setSelectedIndexAction: (state, action) => {
+      state.selectedIndex = action.payload;
+    },
   },
 });
 export const TasksSliceActions = TasksSlice.actions;
