@@ -1,7 +1,7 @@
 import { ListItemButton, ListItemText } from "@mui/material";
 import React, { CSSProperties, useMemo, useCallback } from "react";
 import { areEqual } from "react-window";
-import { TaskListItemData } from "./store/TasksSlice";
+import { TaskListItemData } from "../store/TasksSlice";
 
 const TaskListItemMemo = React.memo(function TaskListItemMemo({
   style,

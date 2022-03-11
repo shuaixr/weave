@@ -10,7 +10,7 @@ import Split from "./component/Split";
 import AddIcon from "@mui/icons-material/Add";
 import React, { useCallback, useRef } from "react";
 import { useAppDispatch } from "./store";
-import TaskList from "./TaskList";
+import TaskList from "./component/TaskList";
 import { TasksSliceActions } from "./store/TasksSlice";
 import { TaskType } from "../../share/TaskType";
 function App() {

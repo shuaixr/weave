@@ -1,12 +1,12 @@
 import React from "react";
 import { useCallback } from "react";
-import { useAppSelector, useAppDispatch } from "./store";
+import { useAppSelector, useAppDispatch } from "../store";
 import {
   selectedIndexSelector,
   taskListDataSelector,
   TaskListItemData,
   TasksSliceActions,
-} from "./store/TasksSlice";
+} from "../store/TasksSlice";
 import AutoSizer from "react-virtualized-auto-sizer";
 import { FixedSizeList } from "react-window";
 import TaskListItem from "./TaskListItem";
