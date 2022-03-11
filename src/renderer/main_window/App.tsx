@@ -13,8 +13,6 @@ import { useAppDispatch } from "./store";
 import TaskList from "./TaskList";
 import { TasksSliceActions } from "./store/TasksSlice";
 import { TaskType } from "../../share/TaskType";
-import { height } from "@mui/system";
-const drawerWidth = 280;
 function App() {
   const taskListRef = useRef<HTMLDivElement>();
   const dispatch = useAppDispatch();
@@ -35,24 +33,10 @@ function App() {
   return (
     <Box height="100%" width="100%">
       <CssBaseline />
-      <Split
-        sx={{ height: "100%" }}
-        minSize={140}
-        sizes={[25, 75]}
-        gutterSize={4}
-      >
-        <Box
-          sx={{
-            display: "flex",
-            flex: "1 1 auto",
-            flexFlow: "column",
-          }}
-        >
-          <Box sx={{ flex: "0 1 auto", m: "1em", display: "flex" }}>
-            <Typography
-              sx={{ mt: "auto", mb: "auto", mr: "auto" }}
-              variant="h5"
-            >
+      <Split split="vertical" minSize={140}>
+        <Box display="flex" flexDirection="column">
+          <Box margin="1em" alignItems="center" display="flex">
+            <Typography flex="1 1 auto" variant="h5">
               Tasks
             </Typography>
             <IconButton onClick={onAddTaskClick}>
@@ -60,15 +44,11 @@ function App() {
             </IconButton>
           </Box>
           <Divider />
-          <Box
-            sx={{
-              flex: "1 1 auto",
-            }}
-          >
+          <Box flex="1 1 auto">
             <TaskList ref={taskListRef} />
           </Box>
         </Box>
-        <Container sx={{ width: "100%" }}></Container>
+        <Container fixed></Container>
       </Split>
     </Box>
   );

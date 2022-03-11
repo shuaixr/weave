@@ -1,18 +1,22 @@
 import { styled } from "@mui/system";
-import Split from "react-split";
+import SplitPane from "react-split-pane";
 
-const SplitStyled = styled(Split)({
-  display: "flex",
-  height: "100%",
-  width: "100%",
-  "& .gutter": {
-    backgroundColor: "#1f1f1f1f",
-    backgroundRepeat: "no-repeat",
-    backgroundPosition: "50%",
+const SplitStyled = styled(SplitPane)({
+  "& .Resizer": {
+    backgroundColor: "#000",
+
+    backgroundClip: "padding-box",
+    opacity: ".2",
+    boxSizing: "border-box",
+    zIndex: 1,
   },
-  "& .gutter.gutter-horizontal": {
-    backgroundImage:
-      "url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUAAAAeCAYAAADkftS9AAAAIklEQVQoU2M4c+bMfxAGAgYYmwGrIIiDjrELjpo5aiZeMwF+yNnOs5KSvgAAAABJRU5ErkJggg==');",
+  "& .Resizer.vertical": {
+    width: "5px",
+
+    margin: "0 -2px",
+    cursor: "col-resize",
+    borderRight: "2px solid rgba(255, 255, 255, 0)",
+    borderLeft: "2px solid rgba(255, 255, 255, 0)",
   },
 });
 export default SplitStyled;
