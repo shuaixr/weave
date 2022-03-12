@@ -13,6 +13,7 @@ import { useAppDispatch } from "./store";
 import TaskList from "./component/TaskList";
 import { TasksSliceActions } from "./store/TasksSlice";
 import { TaskType } from "../../share/TaskType";
+import TaskView from "./component/TaskView";
 function App() {
   const taskListRef = useRef<HTMLDivElement>();
   const dispatch = useAppDispatch();
@@ -34,7 +35,7 @@ function App() {
     <Box height="100%" width="100%">
       <CssBaseline />
       <Split split="vertical" minSize={140}>
-        <Box display="flex" flexDirection="column">
+        <Box flex="1 1 auto" display="flex" flexDirection="column">
           <Box margin="1em" alignItems="center" display="flex">
             <Typography flex="1 1 auto" variant="h5">
               Tasks
@@ -48,7 +49,9 @@ function App() {
             <TaskList ref={taskListRef} />
           </Box>
         </Box>
-        <Container fixed></Container>
+        <Container fixed>
+          <TaskView />
+        </Container>
       </Split>
     </Box>
   );

@@ -10,6 +10,9 @@ const SplitStyled = styled(SplitPane)({
     boxSizing: "border-box",
     zIndex: 1,
   },
+  "& .Pane": {
+    display: "flex",
+  },
   "& .Resizer.vertical": {
     width: "5px",
 

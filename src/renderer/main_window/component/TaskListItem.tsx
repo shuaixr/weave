@@ -46,7 +46,7 @@ const TaskListItem = React.memo(function TaskListItem({
   };
 }) {
   const { setSelectedIndex, tasks, selectedIndex } = data;
-  const { Name } = useMemo(() => {
+  const { name: Name } = useMemo(() => {
     return tasks[index];
   }, [tasks, index]);
   const selected = selectedIndex === index;

@@ -2,10 +2,9 @@ import React from "react";
 import { useCallback } from "react";
 import { useAppSelector, useAppDispatch } from "../store";
 import {
-  selectedIndexSelector,
-  taskListDataSelector,
   TaskListItemData,
   TasksSliceActions,
+  TasksSliceSelector,
 } from "../store/TasksSlice";
 import AutoSizer from "react-virtualized-auto-sizer";
 import { FixedSizeList } from "react-window";
@@ -14,8 +13,8 @@ const TaskList = React.forwardRef<HTMLDivElement>(function TaskList(
   props,
   ref
 ) {
-  const tasks = useAppSelector(taskListDataSelector);
-  const selectedIndex = useAppSelector(selectedIndexSelector);
+  const tasks = useAppSelector(TasksSliceSelector.taskListData);
+  const selectedIndex = useAppSelector(TasksSliceSelector.selectedIndex);
   const dispatch = useAppDispatch();
   const setSelectedIndex = useCallback(
     (index: number) => {
@@ -32,7 +31,7 @@ const TaskList = React.forwardRef<HTMLDivElement>(function TaskList(
         selectedIndex: number;
       }
     ) => {
-      return data.tasks[index].ID;
+      return data.tasks[index].id;
     },
     []
   );
