@@ -1,9 +1,11 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { RootState } from "..";
+import { TaskType } from "../../../../share/TaskType";
+import { getTaskDataHanderByType } from "./ITaskData";
 
 export interface TaskDataObject {
   id: string;
-  type: string;
+  type: TaskType;
 }
 export interface Tasks {
   selectedIndex: number;
@@ -21,10 +23,9 @@ export const TasksSlice = createSlice({
   reducers: {
     addTaskAction: (state, action) => {
       state.selectedIndex = 0;
-      state.taskObject[action.payload.id] = {
-        id: action.payload.id,
-        type: action.payload.type,
-      };
+      state.taskObject[action.payload.id] = getTaskDataHanderByType(
+        action.payload.type
+      ).initDataObject(action.payload.id);
     },
     setSelectedIndexAction: (state, action) => {
       state.selectedIndex = action.payload;
@@ -38,7 +39,7 @@ export interface TaskListItemData {
 }
 
 export const getTaskListItemData = (task: TaskDataObject): TaskListItemData => {
-  return { id: task.id, name: task.type + task.id };
+  return getTaskDataHanderByType(task.type).getListItemData(task);
 };
 
 export const TasksSliceSelector = {

@@ -1,17 +1,20 @@
-import { SliceCaseReducers } from "@reduxjs/toolkit";
-import { TaskDataObject, TaskListItemData, Tasks } from ".";
+import { TaskDataObject, TaskListItemData } from ".";
+import { TaskType } from "../../../../share/TaskType";
+import { TcpClientDataHander } from "./TcpClientData";
 
-export interface ITaskData<
-  T extends TaskDataObject,
-  CR extends SliceCaseReducers<Tasks> = SliceCaseReducers<Tasks>
-> {
+export interface ITaskDataHander<T extends TaskDataObject> {
   initDataObject(id: string): T;
   getListItemData(data: T): TaskListItemData;
-  reducers: CR;
 }
-export function createTaskData<
-  T extends TaskDataObject,
-  CR extends SliceCaseReducers<Tasks> = SliceCaseReducers<Tasks>
->(taskdata: ITaskData<T, CR>): ITaskData<T, CR> {
-  return taskdata;
+
+export function getTaskDataHanderByType(
+  type: TaskType
+): ITaskDataHander<TaskDataObject> {
+  switch (type) {
+    case TaskType.TCP_CLIENT:
+      return TcpClientDataHander;
+
+    default:
+      throw new Error("Unmatched task type: " + type);
+  }
 }
