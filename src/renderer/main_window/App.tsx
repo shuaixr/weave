@@ -35,7 +35,7 @@ function App() {
   return (
     <Box height="100%" width="100%">
       <CssBaseline />
-      <Split split="vertical" minSize={140}>
+      <Split split="vertical" minSize={140} defaultSize={280}>
         <Box flex="1 1 auto" display="flex" flexDirection="column">
           <Box margin="1em" alignItems="center" display="flex">
             <Typography flex="1 1 auto" variant="h5">
