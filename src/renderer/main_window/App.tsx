@@ -14,8 +14,9 @@ import TaskList from "./component/TaskList";
 import { TasksSliceActions } from "./store/TasksSlice";
 import { TaskType } from "../../share/TaskType";
 import TaskView from "./component/TaskView";
+import { VirtuosoHandle } from "react-virtuoso";
 function App() {
-  const taskListRef = useRef<HTMLDivElement>();
+  const taskListRef = useRef<VirtuosoHandle>();
   const dispatch = useAppDispatch();
   const onAddTaskClick = useCallback(() => {
     dispatch(
@@ -25,9 +26,9 @@ function App() {
       })
     );
     if (taskListRef.current === undefined) return;
-    taskListRef.current.scrollTo({
-      left: 0,
-      top: 0,
+    taskListRef.current.scrollToIndex({
+      index: 0,
+      align: "start",
       behavior: "smooth",
     });
   }, [dispatch]);
@@ -45,9 +46,7 @@ function App() {
             </IconButton>
           </Box>
           <Divider />
-          <Box flex="1 1 auto">
-            <TaskList ref={taskListRef} />
-          </Box>
+          <TaskList ref={taskListRef} />
         </Box>
         <Container fixed>
           <TaskView />

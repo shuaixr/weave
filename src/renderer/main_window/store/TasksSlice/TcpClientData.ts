@@ -9,6 +9,6 @@ export const TcpClientDataHander: ITaskDataHander<TcpClientDataObject> = {
     return { id: id, type: TaskType.TCP_CLIENT, address: "" };
   },
   getListItemData: function (data: TcpClientDataObject): TaskListItemData {
-    return { id: data.id, name: "TCP Client " + data.address };
+    return { id: data.id, name: "TCP Client " + data.address + data.id };
   },
 };

@@ -1,15 +1,12 @@
 import React from "react";
 import { useCallback } from "react";
 import { useAppSelector, useAppDispatch } from "../store";
-import {
-  TaskListItemData,
-  TasksSliceActions,
-  TasksSliceSelector,
-} from "../store/TasksSlice";
-import AutoSizer from "react-virtualized-auto-sizer";
-import { FixedSizeList } from "react-window";
+import { TasksSliceActions, TasksSliceSelector } from "../store/TasksSlice";
 import TaskListItem from "./TaskListItem";
-const TaskList = React.forwardRef<HTMLDivElement>(function TaskList(
+import { ItemProps, ListProps, Virtuoso, VirtuosoHandle } from "react-virtuoso";
+import ListItem from "@mui/material/ListItem";
+import List from "@mui/material/List";
+const TaskList = React.forwardRef<VirtuosoHandle>(function TaskList(
   props,
   ref
 ) {
@@ -22,38 +19,54 @@ const TaskList = React.forwardRef<HTMLDivElement>(function TaskList(
     },
     [dispatch]
   );
-  const itemKey = useCallback(
-    (
-      index: number,
-      data: {
-        tasks: TaskListItemData[];
-        setSelectedIndex: (index: number) => void;
-        selectedIndex: number;
-      }
-    ) => {
-      return data.tasks[index].id;
-    },
-    []
-  );
+
   return (
-    <AutoSizer>
-      {({ height, width }) => {
+    <Virtuoso
+      ref={ref}
+      style={{ flex: "1 1 auto" }}
+      data={tasks}
+      components={MUIComponents}
+      itemContent={(index, data) => {
+        const onSelected = () => {
+          setSelectedIndex(index);
+        };
         return (
-          <FixedSizeList
-            outerRef={ref}
-            itemData={{ tasks, setSelectedIndex, selectedIndex }}
-            height={height}
-            width={width}
-            itemCount={tasks.length}
-            itemSize={46}
-            itemKey={itemKey}
-          >
-            {TaskListItem}
-          </FixedSizeList>
+          <TaskListItem
+            name={data.name}
+            selected={selectedIndex == index}
+            onSelected={onSelected}
+          />
         );
       }}
-    </AutoSizer>
+    />
   );
 });
+const MUIComponents = {
+  List: React.forwardRef<HTMLDivElement, ListProps>(function VList(
+    // eslint-disable-next-line react/prop-types
+    { style, children },
+    listRef
+  ) {
+    return (
+      <List style={style} component="div" ref={listRef}>
+        {children}
+      </List>
+    );
+  }),
 
+  Item: ({ ...props }: ItemProps) => {
+    return (
+      <ListItem
+        component="div"
+        sx={{
+          "& + &": {
+            borderTop: "1px solid #0000001f",
+          },
+        }}
+        {...props}
+        style={{ padding: 0 }}
+      />
+    );
+  },
+};
 export default TaskList;
