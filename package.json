@@ -53,7 +53,10 @@
                 {
                   "html": "./src/share/index.html",
                   "js": "./src/renderer/main_window/renderer.tsx",
-                  "name": "main_window"
+                  "name": "main_window",
+                  "preload": {
+                    "js": "./src/renderer/main_window/preload.ts"
+                  }
                 }
               ]
             }

@@ -3,9 +3,8 @@ import { useCallback } from "react";
 import { useAppSelector, useAppDispatch } from "../store";
 import { TasksSliceActions, TasksSliceSelector } from "../store/TasksSlice";
 import TaskListItem from "./TaskListItem";
-import { ItemProps, ListProps, Virtuoso, VirtuosoHandle } from "react-virtuoso";
-import ListItem from "@mui/material/ListItem";
-import List from "@mui/material/List";
+import { Virtuoso, VirtuosoHandle } from "react-virtuoso";
+import { VirtuosoMUIComponents } from "./VirtuosoMUIComponent";
 const TaskList = React.forwardRef<VirtuosoHandle>(function TaskList(
   props,
   ref
@@ -25,7 +24,7 @@ const TaskList = React.forwardRef<VirtuosoHandle>(function TaskList(
       ref={ref}
       style={{ flex: "1 1 auto" }}
       data={tasks}
-      components={MUIComponents}
+      components={VirtuosoMUIComponents}
       itemContent={(index, data) => {
         const onSelected = () => {
           setSelectedIndex(index);
@@ -41,32 +40,4 @@ const TaskList = React.forwardRef<VirtuosoHandle>(function TaskList(
     />
   );
 });
-const MUIComponents = {
-  List: React.forwardRef<HTMLDivElement, ListProps>(function VList(
-    // eslint-disable-next-line react/prop-types
-    { style, children },
-    listRef
-  ) {
-    return (
-      <List style={style} component="div" ref={listRef}>
-        {children}
-      </List>
-    );
-  }),
-
-  Item: ({ ...props }: ItemProps) => {
-    return (
-      <ListItem
-        component="div"
-        sx={{
-          "& + &": {
-            borderTop: "1px solid #0000001f",
-          },
-        }}
-        {...props}
-        style={{ padding: 0 }}
-      />
-    );
-  },
-};
 export default TaskList;
