@@ -4,7 +4,6 @@ import {
   Typography,
   IconButton,
   Divider,
-  Container,
 } from "@mui/material";
 import Split from "./component/Split";
 import AddIcon from "@mui/icons-material/Add";
@@ -33,7 +32,7 @@ function App() {
     });
   }, [dispatch]);
   return (
-    <Box height="100%" width="100%">
+    <Box height="100%" width="100%" display="flex">
       <CssBaseline />
       <Split split="vertical" minSize={140} defaultSize={280}>
         <Box flex="1 1 auto" display="flex" flexDirection="column">
@@ -48,9 +47,7 @@ function App() {
           <Divider />
           <TaskList ref={taskListRef} />
         </Box>
-        <Container fixed>
-          <TaskView />
-        </Container>
+        <TaskView />
       </Split>
     </Box>
   );

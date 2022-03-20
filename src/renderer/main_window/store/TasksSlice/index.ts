@@ -2,6 +2,7 @@ import { createSlice } from "@reduxjs/toolkit";
 import { RootState } from "..";
 import { TaskType } from "../../../../share/TaskType";
 import { getTaskDataHanderByType } from "./ITaskData";
+import { TcpClientDataReducers } from "./TcpClientData";
 
 export interface TaskDataObject {
   id: string;
@@ -30,6 +31,7 @@ export const TasksSlice = createSlice({
     setSelectedIndexAction: (state, action) => {
       state.selectedIndex = action.payload;
     },
+    ...TcpClientDataReducers,
   },
 });
 export const TasksSliceActions = TasksSlice.actions;
@@ -44,6 +46,7 @@ export const getTaskListItemData = (task: TaskDataObject): TaskListItemData => {
 
 export const TasksSliceSelector = {
   selectedIndex: (state: RootState) => state.Tasks.selectedIndex,
+
   taskIDList: (state: RootState) => {
     return Object.keys(state.Tasks.taskObject).reverse();
   },
@@ -52,6 +55,8 @@ export const TasksSliceSelector = {
       TasksSliceSelector.selectedIndex(state)
     ];
   },
+  taskDataById: (id: string) => (state: RootState) =>
+    state.Tasks.taskObject[id],
   taskDataObjectList: (state: RootState) => {
     return Object.values(state.Tasks.taskObject).reverse();
   },
