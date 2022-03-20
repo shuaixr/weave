@@ -13,7 +13,7 @@ export type TaskDataObject = TcpClientDataObject;
 
 export const TasksAdapter = createEntityAdapter<TaskDataObject>({
   selectId: (task) => task.id,
-  sortComparer: (taska, taskb) => taska.id.localeCompare(taskb.id),
+  sortComparer: (taska, taskb) => taskb.id.localeCompare(taska.id),
 });
 
 const TasksInitState = TasksAdapter.getInitialState({ selectedIndex: -1 });
@@ -57,7 +57,7 @@ export const TasksSliceSelector = {
   selectedID: (state: RootState) => {
     return TasksSliceSelector.taskIDList(state)[
       TasksSliceSelector.selectedIndex(state)
-    ];
+    ] as string;
   },
   taskDataById: (id: string) => (state: RootState) =>
     TasksAdapterSelectors.selectById(state.Tasks, id),

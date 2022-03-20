@@ -8,11 +8,17 @@ export default function TcpClientView({ id }: { id: string }) {
   const DataSelector = useTcpClientDataSelector(id);
   const address = useAppSelector(DataSelector.address);
   const dispatch = useAppDispatch();
-  const onAddressChange = useCallback((address: string) => {
-    dispatch(
-      TasksSliceActions.TcpClientSetAddressAction({ id: id, address: address })
-    );
-  }, []);
+  const onAddressChange = useCallback(
+    (address: string) => {
+      dispatch(
+        TasksSliceActions.TcpClientSetAddressAction({
+          id: id,
+          address: address,
+        })
+      );
+    },
+    [id]
+  );
   return (
     <Box flex="1">
       <Box display="flex" flexDirection="row" padding={2}>
