@@ -1,10 +1,16 @@
 import { Draft, PayloadAction } from "@reduxjs/toolkit";
 import { useMemo } from "react";
-import { TaskDataObject, TaskListItemData, Tasks, TasksSliceSelector } from ".";
+import {
+  BaseTaskDataObject,
+  TaskListItemData,
+  Tasks,
+  TasksAdapter,
+  TasksSliceSelector,
+} from ".";
 import { RootState } from "..";
 import { TaskType } from "../../../../share/TaskType";
 import { ITaskDataHander } from "./ITaskData";
-export interface TcpClientDataObject extends TaskDataObject {
+export interface TcpClientDataObject extends BaseTaskDataObject {
   address: string;
 }
 export const TcpClientDataHander: ITaskDataHander<TcpClientDataObject> = {
@@ -20,8 +26,10 @@ export const TcpClientDataReducers = {
     state: Draft<Tasks>,
     action: PayloadAction<{ id: string; address: string }>
   ) => {
-    (state.taskObject[action.payload.id] as TcpClientDataObject).address =
-      action.payload.address;
+    TasksAdapter.updateOne(state, {
+      id: action.payload.id,
+      changes: { address: action.payload.address },
+    });
   },
 };
 export const useTcpClientDataSelector = (id: string) => {
