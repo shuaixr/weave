@@ -1,9 +1,8 @@
-import { createSelector, Draft, PayloadAction } from "@reduxjs/toolkit";
+import { createAction, createSelector } from "@reduxjs/toolkit";
 import { useMemo } from "react";
 import {
   BaseTaskDataObject,
   TaskListItemData,
-  Tasks,
   TasksAdapter,
   TasksSliceSelector,
 } from ".";
@@ -24,8 +23,26 @@ export const TcpClientDataHander: ITaskDataHander<TcpClientDataObject> = {
   getListItemData: function (data: TcpClientDataObject): TaskListItemData {
     return { id: data.id, name: "TCP Client " + data.address + data.id };
   },
+  handleReducers: (builder) => {
+    builder.addCase(TcpClientAction.setAddress, (state, action) => {
+      TasksAdapter.updateOne(state, {
+        id: action.payload.id,
+        changes: { address: action.payload.address },
+      });
+    });
+  },
 };
-export const TcpClientDataReducers = {
+
+export const TcpClientAction = {
+  setAddress: createAction(
+    "TcpClient/SetAddress",
+    (id: string, address: string) => {
+      return { payload: { id, address } };
+    }
+  ),
+};
+/*
+export const TcpClientAction = {
   TcpClientSetAddressAction: (
     state: Draft<Tasks>,
     action: PayloadAction<{ id: string; address: string }>
@@ -35,7 +52,7 @@ export const TcpClientDataReducers = {
       changes: { address: action.payload.address },
     });
   },
-};
+};*/
 export const useTcpClientDataSelector = (id: string) => {
   return useMemo(() => {
     const getCurrentTcpClientData = createSelector(

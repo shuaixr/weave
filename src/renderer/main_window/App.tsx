@@ -10,20 +10,15 @@ import AddIcon from "@mui/icons-material/Add";
 import React, { useCallback, useRef } from "react";
 import { useAppDispatch } from "./store";
 import TaskList from "./component/TaskList";
-import { TasksSliceActions } from "./store/TasksSlice";
 import { TaskType } from "../../share/TaskType";
 import TaskView from "./component/TaskView";
 import { VirtuosoHandle } from "react-virtuoso";
+import { TasksListAction } from "./store/TasksSlice";
 function App() {
   const taskListRef = useRef<VirtuosoHandle>();
   const dispatch = useAppDispatch();
   const onAddTaskClick = useCallback(() => {
-    dispatch(
-      TasksSliceActions.addTaskAction({
-        id: String(Date.now()),
-        type: TaskType.TCP_CLIENT,
-      })
-    );
+    dispatch(TasksListAction.addTask(TaskType.TCP_CLIENT));
     if (taskListRef.current === undefined) return;
     taskListRef.current.scrollToIndex({
       index: 0,

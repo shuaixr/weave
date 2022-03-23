@@ -1,7 +1,8 @@
-import { BridgeApiType } from "./bridgeIpcApi";
-
+export declare interface Api {
+  addTask: (id: string, type: string) => Promise<unknown>;
+}
 declare global {
   interface Window {
-    ipc: BridgeApiType;
+    api: Api;
   }
 }

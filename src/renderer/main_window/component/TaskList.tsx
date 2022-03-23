@@ -1,7 +1,7 @@
 import React from "react";
 import { useCallback } from "react";
 import { useAppSelector, useAppDispatch } from "../store";
-import { TasksSliceActions, TasksSliceSelector } from "../store/TasksSlice";
+import { TasksListAction, TasksSliceSelector } from "../store/TasksSlice";
 import TaskListItem from "./TaskListItem";
 import { Virtuoso, VirtuosoHandle } from "react-virtuoso";
 import { VirtuosoMUIComponents } from "./VirtuosoMUIComponent";
@@ -14,7 +14,7 @@ const TaskList = React.forwardRef<VirtuosoHandle>(function TaskList(
   const dispatch = useAppDispatch();
   const setSelectedIndex = useCallback(
     (index: number) => {
-      dispatch(TasksSliceActions.setSelectedIndexAction(index));
+      dispatch(TasksListAction.setSelectedIndex(index));
     },
     [dispatch]
   );

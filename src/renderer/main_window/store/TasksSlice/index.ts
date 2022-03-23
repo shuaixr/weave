@@ -1,13 +1,17 @@
-import { createEntityAdapter, createSlice } from "@reduxjs/toolkit";
+import {
+  createAction,
+  createEntityAdapter,
+  createSlice,
+} from "@reduxjs/toolkit";
 
 import { RootState } from "..";
-import { TaskType } from "../../../../share/TaskType";
+import { TaskTypeList } from "../../../../share/TaskType";
 import { getTaskDataHanderByType } from "./ITaskData";
-import { TcpClientDataObject, TcpClientDataReducers } from "./TcpClientData";
+import { TcpClientAction, TcpClientDataObject } from "./TcpClientData";
 
 export interface BaseTaskDataObject {
   id: string;
-  type: TaskType;
+  type: string;
 }
 export type TaskDataObject = TcpClientDataObject;
 
@@ -21,8 +25,10 @@ export type Tasks = typeof TasksInitState;
 export const TasksSlice = createSlice({
   name: "Tasks",
   initialState: TasksInitState,
-  reducers: {
-    addTaskAction: (state, action) => {
+  reducers: {},
+  extraReducers: (builder) => {
+    //Handle TaskListAction
+    builder.addCase(TasksListAction.addTask, (state, action) => {
       state.selectedIndex = 0;
       TasksAdapter.addOne(
         state,
@@ -30,14 +36,27 @@ export const TasksSlice = createSlice({
           action.payload.id
         )
       );
-    },
-    setSelectedIndexAction: (state, action) => {
+    });
+    builder.addCase(TasksListAction.setSelectedIndex, (state, action) => {
       state.selectedIndex = action.payload;
-    },
-    ...TcpClientDataReducers,
+    });
+    //Handle other task reducers
+    TaskTypeList.map(getTaskDataHanderByType).forEach((taskHander) =>
+      taskHander.handleReducers(builder)
+    );
   },
 });
-export const TasksSliceActions = TasksSlice.actions;
+export const TasksListAction = {
+  addTask: createAction("TaskList/AddTask", function preare(type: string) {
+    return {
+      payload: {
+        id: String(Date.now()),
+        type,
+      },
+    };
+  }),
+  setSelectedIndex: createAction<number>("TaskList/SetSelectedIndex"),
+};
 export interface TaskListItemData {
   id: string;
   name: string;

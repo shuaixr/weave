@@ -3,8 +3,10 @@ import { Box } from "@mui/system";
 import React, { useCallback } from "react";
 import { Virtuoso } from "react-virtuoso";
 import { useAppDispatch, useAppSelector } from "../../store";
-import { TasksSliceActions } from "../../store/TasksSlice";
-import { useTcpClientDataSelector } from "../../store/TasksSlice/TcpClientData";
+import {
+  TcpClientAction,
+  useTcpClientDataSelector,
+} from "../../store/TasksSlice/TcpClientData";
 import { VirtuosoMUIComponents } from "../VirtuosoMUIComponent";
 export default function TcpClientView({ id }: { id: string }) {
   const DataSelector = useTcpClientDataSelector(id);
@@ -13,12 +15,7 @@ export default function TcpClientView({ id }: { id: string }) {
   const dispatch = useAppDispatch();
   const onAddressChange = useCallback(
     (address: string) => {
-      dispatch(
-        TasksSliceActions.TcpClientSetAddressAction({
-          id: id,
-          address: address,
-        })
-      );
+      dispatch(TcpClientAction.setAddress(id, address));
     },
     [id]
   );
