@@ -13,46 +13,47 @@ interface DataListItem {
   data: Uint8Array;
 }
 export interface TcpClientDataObject extends BaseTaskDataObject {
-  address: string;
+  host: string;
+  port: number;
   dataList: DataListItem[];
 }
 export const TcpClientDataHander: ITaskDataHander<TcpClientDataObject> = {
   initDataObject: function (id: string): TcpClientDataObject {
-    return { id: id, type: TaskType.TCP_CLIENT, address: "", dataList: [] };
+    return {
+      id: id,
+      type: TaskType.TCP_CLIENT,
+      host: "",
+      port: 80,
+      dataList: [],
+    };
   },
   getListItemData: function (data: TcpClientDataObject): TaskListItemData {
-    return { id: data.id, name: "TCP Client " + data.address + data.id };
+    return { id: data.id, name: "TCP Client " + data.host + ":" + data.port };
   },
   handleReducers: (builder) => {
-    builder.addCase(TcpClientAction.setAddress, (state, action) => {
+    builder.addCase(TcpClientAction.setHost, (state, action) => {
       TasksAdapter.updateOne(state, {
         id: action.payload.id,
-        changes: { address: action.payload.address },
+        changes: { host: action.payload.host },
+      });
+    });
+    builder.addCase(TcpClientAction.setPort, (state, action) => {
+      TasksAdapter.updateOne(state, {
+        id: action.payload.id,
+        changes: { port: action.payload.port },
       });
     });
   },
 };
 
 export const TcpClientAction = {
-  setAddress: createAction(
-    "TcpClient/SetAddress",
-    (id: string, address: string) => {
-      return { payload: { id, address } };
-    }
-  ),
+  setHost: createAction("TcpClient/SetHost", (id: string, host: string) => {
+    return { payload: { id, host } };
+  }),
+  setPort: createAction("TcpClient/SetPort", (id: string, port: number) => {
+    return { payload: { id, port } };
+  }),
 };
-/*
-export const TcpClientAction = {
-  TcpClientSetAddressAction: (
-    state: Draft<Tasks>,
-    action: PayloadAction<{ id: string; address: string }>
-  ) => {
-    TasksAdapter.updateOne(state, {
-      id: action.payload.id,
-      changes: { address: action.payload.address },
-    });
-  },
-};*/
 export const useTcpClientDataSelector = (id: string) => {
   return useMemo(() => {
     const getCurrentTcpClientData = createSelector(
@@ -60,7 +61,8 @@ export const useTcpClientDataSelector = (id: string) => {
       (task) => task as TcpClientDataObject
     );
     return {
-      address: (state: RootState) => getCurrentTcpClientData(state).address,
+      host: (state: RootState) => getCurrentTcpClientData(state).host,
+      port: (state: RootState) => getCurrentTcpClientData(state).port,
       dataList: (state: RootState) => getCurrentTcpClientData(state).dataList,
     };
   }, [id]);

@@ -10,12 +10,20 @@ import {
 import { VirtuosoMUIComponents } from "../VirtuosoMUIComponent";
 export default function TcpClientView({ id }: { id: string }) {
   const DataSelector = useTcpClientDataSelector(id);
-  const address = useAppSelector(DataSelector.address);
+  const host = useAppSelector(DataSelector.host);
+
+  const port = useAppSelector(DataSelector.port);
   const dataList = useAppSelector(DataSelector.dataList);
   const dispatch = useAppDispatch();
-  const onAddressChange = useCallback(
-    (address: string) => {
-      dispatch(TcpClientAction.setAddress(id, address));
+  const onHostChange = useCallback(
+    (host: string) => {
+      dispatch(TcpClientAction.setHost(id, host));
+    },
+    [id]
+  );
+  const onPortChange = useCallback(
+    (port: number) => {
+      dispatch(TcpClientAction.setPort(id, port));
     },
     [id]
   );
@@ -23,11 +31,22 @@ export default function TcpClientView({ id }: { id: string }) {
     <Box flex="1">
       <Box display="flex" flexDirection="row" padding={2}>
         <TextField
-          sx={{ flex: "1", paddingRight: 2 }}
-          label="Address"
+          sx={{ flex: "1" }}
+          label="Host"
           variant="outlined"
-          value={address}
-          onChange={(event) => onAddressChange(event.target.value)}
+          value={host}
+          onChange={(event) => onHostChange(event.target.value)}
+        />
+        <Typography alignSelf="center" padding={1} flex="0 1 auto">
+          :
+        </Typography>
+        <TextField
+          type="number"
+          sx={{ flex: "0 1 auto", paddingRight: 2 }}
+          label="Port"
+          variant="outlined"
+          value={port}
+          onChange={(event) => onPortChange(Number(event.target.value))}
         />
         <Button variant="outlined">Connect</Button>
       </Box>
