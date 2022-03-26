@@ -1,3 +1,4 @@
+import { LoadingButton } from "@mui/lab";
 import { Button, TextField, Typography } from "@mui/material";
 import { Box } from "@mui/system";
 import React, { useCallback } from "react";
@@ -5,6 +6,7 @@ import { Virtuoso } from "react-virtuoso";
 import { useAppDispatch, useAppSelector } from "../../store";
 import {
   TcpClientAction,
+  TcpClientConnectState,
   useTcpClientDataSelector,
 } from "../../store/TasksSlice/TcpClientData";
 import { VirtuosoMUIComponents } from "../VirtuosoMUIComponent";
@@ -14,6 +16,8 @@ export default function TcpClientView({ id }: { id: string }) {
 
   const port = useAppSelector(DataSelector.port);
   const dataList = useAppSelector(DataSelector.dataList);
+  const connState = useAppSelector(DataSelector.connectState);
+  const isNotUnconnect = connState != TcpClientConnectState.Unconnected;
   const dispatch = useAppDispatch();
   const onHostChange = useCallback(
     (host: string) => {
@@ -27,6 +31,10 @@ export default function TcpClientView({ id }: { id: string }) {
     },
     [id]
   );
+
+  const onConnect = useCallback(() => {
+    dispatch(TcpClientAction.connect(id));
+  }, [id]);
   return (
     <Box flex="1">
       <Box display="flex" flexDirection="row" padding={2}>
@@ -35,20 +43,39 @@ export default function TcpClientView({ id }: { id: string }) {
           label="Host"
           variant="outlined"
           value={host}
+          disabled={isNotUnconnect}
           onChange={(event) => onHostChange(event.target.value)}
         />
-        <Typography alignSelf="center" padding={1} flex="0 1 auto">
+        <Typography alignSelf="center" padding={1}>
           :
         </Typography>
         <TextField
           type="number"
-          sx={{ flex: "0 1 auto", paddingRight: 2 }}
+          sx={{ paddingRight: 2 }}
           label="Port"
           variant="outlined"
           value={port}
+          disabled={isNotUnconnect}
           onChange={(event) => onPortChange(Number(event.target.value))}
         />
-        <Button variant="outlined">Connect</Button>
+        <LoadingButton
+          variant="contained"
+          color={
+            connState != TcpClientConnectState.Establishment
+              ? "primary"
+              : "error"
+          }
+          loading={connState == TcpClientConnectState.Connecting}
+          onClick={
+            connState != TcpClientConnectState.Establishment
+              ? onConnect
+              : () => window.api.TcpClient.destroy(id)
+          }
+        >
+          {connState != TcpClientConnectState.Establishment
+            ? "Connect"
+            : "Close"}
+        </LoadingButton>
       </Box>
       <Box flex="1" display="flex" padding={2}>
         <Typography variant="h6">Data Flow</Typography>

@@ -1,5 +1,5 @@
 import { BrowserWindow, ipcMain } from "electron";
-import IpcRendererChannel from "../../share/IpcRendererChannel";
+import { TaskListIpc } from "../../share/ipcChannel";
 import { TaskType } from "../../share/TaskType";
 import { Task } from "./task";
 import { TcpClientTask } from "./task/TcpClient";
@@ -31,17 +31,14 @@ export class MainWindow {
     this.window.webContents.openDevTools();
 
     //Init ipc
-    ipcMain.handle(
-      IpcRendererChannel.ADD_TASK,
-      (event, id: string, type: string) => {
-        let newTask: Task;
-        switch (type) {
-          case TaskType.TCP_CLIENT:
-            newTask = new TcpClientTask(id);
-            break;
-        }
-        this.taskMap.set(id, newTask);
+    ipcMain.handle(TaskListIpc.ADD_TASK, (event, id: string, type: string) => {
+      let newTask: Task;
+      switch (type) {
+        case TaskType.TCP_CLIENT:
+          newTask = new TcpClientTask(this.window, id);
+          break;
       }
-    );
+      this.taskMap.set(id, newTask);
+    });
   }
 }

@@ -1,5 +1,6 @@
-import { ActionReducerMapBuilder } from "@reduxjs/toolkit";
+import { ActionReducerMapBuilder, ListenerEffectAPI } from "@reduxjs/toolkit";
 import { TaskDataObject, TaskListItemData, Tasks } from ".";
+import { AppDispatch, RootState } from "..";
 import { TaskType } from "../../../../share/TaskType";
 import { TcpClientDataHander } from "./TcpClientData";
 
@@ -7,6 +8,7 @@ export interface ITaskDataHander<T extends TaskDataObject> {
   initDataObject(id: string): T;
   getListItemData(data: T): TaskListItemData;
   handleReducers(builder: ActionReducerMapBuilder<Tasks>): void;
+  initIpc(id: string, api: ListenerEffectAPI<RootState, AppDispatch>): void;
 }
 
 export function getTaskDataHanderByType(

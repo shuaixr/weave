@@ -7,7 +7,7 @@ import {
 import { RootState } from "..";
 import { TaskTypeList } from "../../../../share/TaskType";
 import { getTaskDataHanderByType } from "./ITaskData";
-import { TcpClientAction, TcpClientDataObject } from "./TcpClientData";
+import { TcpClientDataObject } from "./TcpClientData";
 
 export interface BaseTaskDataObject {
   id: string;
