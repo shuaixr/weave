@@ -1,4 +1,3 @@
-import { timingSafeEqual } from "crypto";
 import { BrowserWindow, ipcMain } from "electron";
 import { Socket } from "net";
 import { Task } from ".";
@@ -12,12 +11,13 @@ export class TcpClientTask extends Task {
     this.client.on("error", (e) => {
       console.log(e);
     });
-    this.client.on("close", () => {
-      this.window.webContents.send(TcpClientIpc.ON_CLOSE(id));
-    });
-    ipcMain.on(TcpClientIpc.DESTORY(id), () => {
-      this.client.destroy();
-    });
+    this.client.on("connect", () =>
+      this.window.webContents.send(TcpClientIpc.ON_CONNECT(id))
+    );
+    this.client.on("close", () =>
+      this.window.webContents.send(TcpClientIpc.ON_CLOSE(id))
+    );
+    ipcMain.on(TcpClientIpc.DESTORY(id), () => this.client.destroy());
     ipcMain.handle(TcpClientIpc.SEND_DATA(id), (event, data: Uint8Array) => {
       return new Promise<void>((resolve) => {
         this.client.write(data, () => {
@@ -25,14 +25,10 @@ export class TcpClientTask extends Task {
         });
       });
     });
-    ipcMain.handle(
+    ipcMain.on(
       TcpClientIpc.CONNECT(id),
       (event, host: string, port: number) => {
-        return new Promise<void>((resolve) => {
-          this.client.connect(port, host, () => {
-            resolve();
-          });
-        });
+        this.client.connect(port, host);
       }
     );
   }

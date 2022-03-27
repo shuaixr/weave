@@ -1,9 +1,4 @@
-import {
-  createAction,
-  createAsyncThunk,
-  createSelector,
-} from "@reduxjs/toolkit";
-import { ipcRenderer } from "electron";
+import { createAction, createSelector } from "@reduxjs/toolkit";
 import { useMemo } from "react";
 import {
   BaseTaskDataObject,
@@ -61,24 +56,16 @@ export const TcpClientDataHander: ITaskDataHander<TcpClientDataObject> = {
         changes: { connectState: action.payload.state },
       });
     });
-    builder.addCase(TcpClientAction.connect.pending, (state, action) => {
-      TasksAdapter.updateOne(state, {
-        id: action.meta.arg,
-        changes: { connectState: TcpClientConnectState.Connecting },
-      });
-    });
-
-    builder.addCase(TcpClientAction.connect.fulfilled, (state, action) => {
-      TasksAdapter.updateOne(state, {
-        id: action.meta.arg,
-        changes: { connectState: TcpClientConnectState.Establishment },
-      });
-    });
   },
   initIpc: (id, api) => {
     window.api.TcpClient.onClose(id, () => {
       api.dispatch(
         TcpClientAction.setConnectState(id, TcpClientConnectState.Unconnected)
+      );
+    });
+    window.api.TcpClient.onConnect(id, () => {
+      api.dispatch(
+        TcpClientAction.setConnectState(id, TcpClientConnectState.Establishment)
       );
     });
   },
@@ -95,20 +82,6 @@ export const TcpClientAction = {
     "TcpClient/SetConnectState",
     (id: string, state: string) => {
       return { payload: { id, state } };
-    }
-  ),
-  connect: createAsyncThunk<void, string, { state: RootState }>(
-    "TcpClient/Connect",
-    async (id, api) => {
-      try {
-        const state = api.getState();
-        const data = TasksSliceSelector.taskDataById(id)(
-          state
-        ) as TcpClientDataObject;
-        return await window.api.TcpClient.connect(id, data.host, data.port);
-      } catch (error) {
-        console.log(error);
-      }
     }
   ),
 };

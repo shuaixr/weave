@@ -1,5 +1,5 @@
 import { LoadingButton } from "@mui/lab";
-import { Button, TextField, Typography } from "@mui/material";
+import { TextField, Typography } from "@mui/material";
 import { Box } from "@mui/system";
 import React, { useCallback } from "react";
 import { Virtuoso } from "react-virtuoso";
@@ -32,8 +32,15 @@ export default function TcpClientView({ id }: { id: string }) {
     [id]
   );
 
-  const onConnect = useCallback(() => {
-    dispatch(TcpClientAction.connect(id));
+  const connect = useCallback(() => {
+    window.api.TcpClient.connect(id, host, port);
+    dispatch(
+      TcpClientAction.setConnectState(id, TcpClientConnectState.Connecting)
+    );
+  }, [id, host, port]);
+
+  const distory = useCallback(() => {
+    window.api.TcpClient.destroy(id);
   }, [id]);
   return (
     <Box flex="1">
@@ -67,14 +74,12 @@ export default function TcpClientView({ id }: { id: string }) {
           }
           loading={connState == TcpClientConnectState.Connecting}
           onClick={
-            connState != TcpClientConnectState.Establishment
-              ? onConnect
-              : () => window.api.TcpClient.destroy(id)
+            connState != TcpClientConnectState.Establishment ? connect : distory
           }
         >
           {connState != TcpClientConnectState.Establishment
             ? "Connect"
-            : "Close"}
+            : "Distroy"}
         </LoadingButton>
       </Box>
       <Box flex="1" display="flex" padding={2}>
