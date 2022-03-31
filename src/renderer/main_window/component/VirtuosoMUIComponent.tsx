@@ -29,3 +29,26 @@ export const VirtuosoMUIComponents = {
     );
   },
 };
+export const VirtuosoMUIComponentsNoDivider = {
+  List: React.forwardRef<HTMLDivElement, ListProps>(function VList(
+    // eslint-disable-next-line react/prop-types
+    { style, children },
+    listRef
+  ) {
+    return (
+      <List style={style} component="div" ref={listRef}>
+        {children}
+      </List>
+    );
+  }),
+
+  Item: ({ ...props }: ItemProps) => {
+    return (
+      <ListItem
+        component="div"
+        {...props}
+        style={{ padding: 0, display: "flex" }}
+      />
+    );
+  },
+};

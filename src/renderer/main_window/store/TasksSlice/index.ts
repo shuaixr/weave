@@ -1,8 +1,4 @@
-import {
-  createAction,
-  createEntityAdapter,
-  createSlice,
-} from "@reduxjs/toolkit";
+import { createAction, createSelector, createSlice } from "@reduxjs/toolkit";
 
 import { RootState } from "..";
 import { TaskTypeList } from "../../../../share/TaskType";
@@ -15,13 +11,13 @@ export interface BaseTaskDataObject {
 }
 export type TaskDataObject = TcpClientDataObject;
 
-export const TasksAdapter = createEntityAdapter<TaskDataObject>({
-  selectId: (task) => task.id,
-  sortComparer: (taska, taskb) => taskb.id.localeCompare(taska.id),
-});
+export type Tasks = {
+  selectedIndex: number;
+  ids: string[];
+  tasks: { [ID: string]: TaskDataObject };
+};
+const TasksInitState: Tasks = { selectedIndex: -1, ids: [], tasks: {} };
 
-const TasksInitState = TasksAdapter.getInitialState({ selectedIndex: -1 });
-export type Tasks = typeof TasksInitState;
 export const TasksSlice = createSlice({
   name: "Tasks",
   initialState: TasksInitState,
@@ -30,12 +26,10 @@ export const TasksSlice = createSlice({
     //Handle TaskListAction
     builder.addCase(TasksListAction.addTask, (state, action) => {
       state.selectedIndex = 0;
-      TasksAdapter.addOne(
-        state,
-        getTaskDataHanderByType(action.payload.type).initDataObject(
-          action.payload.id
-        )
-      );
+      state.ids.unshift(action.payload.id);
+      state.tasks[action.payload.id] = getTaskDataHanderByType(
+        action.payload.type
+      ).initDataObject(action.payload.id);
     });
     builder.addCase(TasksListAction.setSelectedIndex, (state, action) => {
       state.selectedIndex = action.payload;
@@ -66,22 +60,19 @@ export const getTaskListItemData = (task: TaskDataObject): TaskListItemData => {
   return getTaskDataHanderByType(task.type).getListItemData(task);
 };
 
-const TasksAdapterSelectors = TasksAdapter.getSelectors();
 export const TasksSliceSelector = {
   selectedIndex: (state: RootState) => state.Tasks.selectedIndex,
 
   taskIDList: (state: RootState) => {
-    return TasksAdapterSelectors.selectIds(state.Tasks);
+    return state.Tasks.ids;
   },
   selectedID: (state: RootState) => {
     return TasksSliceSelector.taskIDList(state)[
       TasksSliceSelector.selectedIndex(state)
-    ] as string;
+    ];
   },
-  taskDataById: (id: string) => (state: RootState) =>
-    TasksAdapterSelectors.selectById(state.Tasks, id),
-  taskDataObjectList: (state: RootState) =>
-    TasksAdapterSelectors.selectAll(state.Tasks),
+  taskDataById: (id: string) => (state: RootState) => state.Tasks.tasks[id],
+  taskDataObjectList: (state: RootState) => Object.values(state.Tasks.tasks),
   selectedTaskDataObject: (state: RootState) =>
     TasksSliceSelector.taskDataObjectList(state)[
       TasksSliceSelector.selectedIndex(state)
@@ -95,9 +86,9 @@ export const TasksSliceSelector = {
     return selectedTaskDataObject.type;
   },
 
-  taskListData: (state: RootState) => {
-    return TasksSliceSelector.taskDataObjectList(state).map(
-      getTaskListItemData
-    );
-  },
+  taskListItemData: (id: string) =>
+    createSelector(
+      (state: RootState) => TasksSliceSelector.taskDataById(id)(state),
+      (task) => getTaskDataHanderByType(task.type).getListItemData(task)
+    ),
 };

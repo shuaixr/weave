@@ -35,12 +35,24 @@ import ReactDOM from "react-dom";
 import App from "./App";
 import { Provider } from "react-redux";
 import { store } from "./store";
+import { createTheme, ThemeProvider } from "@mui/material/styles";
 
+const theme = createTheme({
+  palette: {
+    background: {
+      dark: "#8aacc8",
+      light: "#bbdefb",
+      emphasis: { A: "#e3f2fd", B: "#ffebee" },
+    },
+  },
+});
 ReactDOM.render(
   <React.StrictMode>
-    <Provider store={store}>
-      <App />
-    </Provider>
+    <ThemeProvider theme={theme}>
+      <Provider store={store}>
+        <App />
+      </Provider>
+    </ThemeProvider>
   </React.StrictMode>,
   document.getElementById("root")
 );
