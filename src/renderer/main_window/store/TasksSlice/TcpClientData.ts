@@ -130,25 +130,26 @@ export const TcpClientDataHander: ITaskDataHander<TcpClientDataObject> = {
       }
     });
   },
-  initIpc: (id, api) => {
+  addIpc: (id, dispatch) => {
     window.api.TcpClient.onClose(id, () => {
-      api.dispatch(
+      dispatch(
         TcpClientAction.setConnectState(id, TcpClientConnectState.Unconnected)
       );
     });
 
     window.api.TcpClient.onConnect(id, () => {
-      api.dispatch(
+      dispatch(
         TcpClientAction.setConnectState(id, TcpClientConnectState.Establishment)
       );
     });
     window.api.TcpClient.onData(id, (data) => {
-      api.dispatch(TcpClientAction.addReceviedData(id, data));
+      dispatch(TcpClientAction.addReceviedData(id, data));
     });
     window.api.TcpClient.onLog(id, (level, msg) => {
-      api.dispatch(TcpClientAction.pushLog(id, level, msg));
+      dispatch(TcpClientAction.pushLog(id, level, msg));
     });
   },
+  removeIpc: (id) => window.api.TcpClient.removeAllListeners(id),
 };
 
 export const TcpClientAction = {

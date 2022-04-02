@@ -1,27 +1,44 @@
-import { ListItemButton, ListItemText } from "@mui/material";
+import {
+  IconButton,
+  ListItemButton,
+  ListItemSecondaryAction,
+  ListItemText,
+} from "@mui/material";
+import CloseIcon from "@mui/icons-material/Close";
 import React, { useCallback } from "react";
-import { useAppSelector } from "../store";
-import { TasksSliceSelector } from "../store/TasksSlice";
+import { TaskListItemData } from "../store/TasksSlice";
 
 const TaskListItem = React.memo(function TaskListItemMemo({
-  id,
+  data,
   index,
   selected,
   setSelectedIndex,
+  removeTask,
 }: {
-  id: string;
+  data: TaskListItemData;
   index: number;
   selected: boolean;
   setSelectedIndex: (index: number) => void;
+  removeTask: (index: number) => void;
 }) {
   const onSelected = useCallback(() => {
     setSelectedIndex(index);
   }, [index]);
-  const itemData = useAppSelector(TasksSliceSelector.taskListItemData(id));
+
+  const remove = useCallback(() => {
+    removeTask(index);
+  }, [index]);
   return (
-    <ListItemButton selected={selected} onClick={onSelected}>
-      <ListItemText primary={itemData.name} />
-    </ListItemButton>
+    <>
+      <ListItemButton selected={selected} onClick={onSelected}>
+        <ListItemText primary={data.name} />
+      </ListItemButton>
+      <ListItemSecondaryAction>
+        <IconButton onClick={remove}>
+          <CloseIcon />
+        </IconButton>
+      </ListItemSecondaryAction>
+    </>
   );
 });
 export default TaskListItem;

@@ -4,6 +4,7 @@ TaskListIpc;
 import { Api } from "./api";
 export const api: Api = {
   addTask: (id, type) => ipcRenderer.invoke(TaskListIpc.ADD_TASK, id, type),
+  removeTask: (id) => ipcRenderer.invoke(TaskListIpc.REMOVE_TASK, id),
   TcpClient: {
     connect: (id, host, port) =>
       ipcRenderer.send(TcpClientIpc.CONNECT(id), host, port),
@@ -21,7 +22,8 @@ export const api: Api = {
       ipcRenderer.on(TcpClientIpc.ON_DATA(id), (_, data) => cb(data)),
     removeAllListeners: (id: string) => {
       ipcRenderer.removeAllListeners(TcpClientIpc.ON_CLOSE(id));
-
+      ipcRenderer.removeAllListeners(TcpClientIpc.ON_DATA(id));
+      ipcRenderer.removeAllListeners(TcpClientIpc.ON_LOG(id));
       ipcRenderer.removeAllListeners(TcpClientIpc.ON_CONNECT(id));
     },
   },

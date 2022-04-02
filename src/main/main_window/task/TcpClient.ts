@@ -1,4 +1,4 @@
-import { BrowserWindow, ipcMain } from "electron";
+import { BrowserWindow } from "electron";
 import { Socket } from "net";
 import { Task } from ".";
 import { TcpClientIpc } from "../../../share/ipcChannel";
@@ -21,11 +21,12 @@ export class TcpClientTask extends Task {
     });
     this.client.on("error", (err) => this.log(LogLevel.ERROR, err.message));
     this.client.on("data", (data) => {
-      console.log(data);
       this.window.webContents.send(TcpClientIpc.ON_DATA(id), data.toString());
     });
-    ipcMain.on(TcpClientIpc.DESTORY(id), () => this.client.destroy());
-    ipcMain.handle(TcpClientIpc.SEND_DATA(id), (event, data: string) => {
+    this.on(TcpClientIpc.DESTORY(id), () => {
+      this.client.destroy();
+    });
+    this.handle(TcpClientIpc.SEND_DATA(id), (event, data: string) => {
       return new Promise<string | undefined>((resolve) => {
         this.client.write(data, (err) => {
           if (err) {
@@ -36,19 +37,16 @@ export class TcpClientTask extends Task {
         });
       });
     });
-    ipcMain.on(
-      TcpClientIpc.CONNECT(id),
-      (event, host: string, port: number) => {
-        this.client.connect(port, host);
+    this.on(TcpClientIpc.CONNECT(id), (event, host: string, port: number) => {
+      this.client.connect(port, host);
 
-        this.log(LogLevel.INFO, "Connecting to " + host + ":" + port + "...");
-      }
-    );
+      this.log(LogLevel.INFO, "Connecting to " + host + ":" + port + "...");
+    });
   }
   log(level: string, msg: string) {
     this.window.webContents.send(TcpClientIpc.ON_LOG(this.id), level, msg);
   }
   remove(): void {
-    throw new Error("Method not implemented.");
+    this.removeAllIpc();
   }
 }

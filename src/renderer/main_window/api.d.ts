@@ -1,4 +1,5 @@
 export declare interface Api {
+  removeTask: (id: string) => Promise<unknown>;
   addTask: (id: string, type: string) => Promise<unknown>;
   TcpClient: {
     connect: (id: string, host: string, port: number) => void;

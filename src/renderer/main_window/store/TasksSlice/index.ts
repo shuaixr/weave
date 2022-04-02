@@ -1,6 +1,11 @@
-import { createAction, createSelector, createSlice } from "@reduxjs/toolkit";
+import {
+  createAction,
+  createAsyncThunk,
+  createSelector,
+  createSlice,
+} from "@reduxjs/toolkit";
 
-import { RootState } from "..";
+import { AppDispatch, RootState } from "..";
 import { TaskTypeList } from "../../../../share/TaskType";
 import { getTaskDataHanderByType } from "./ITaskData";
 import { TcpClientDataObject } from "./TcpClientData";
@@ -24,7 +29,13 @@ export const TasksSlice = createSlice({
   reducers: {},
   extraReducers: (builder) => {
     //Handle TaskListAction
-    builder.addCase(TasksListAction.addTask, (state, action) => {
+    builder.addCase(TasksListAction.removeTask.fulfilled, (state, action) => {
+      delete state.tasks[state.ids[action.payload.index]];
+      state.ids.splice(action.payload.index, 1);
+
+      if (state.selectedIndex == state.ids.length) state.selectedIndex--;
+    });
+    builder.addCase(TasksListAction.addTask.fulfilled, (state, action) => {
       state.selectedIndex = 0;
       state.ids.unshift(action.payload.id);
       state.tasks[action.payload.id] = getTaskDataHanderByType(
@@ -41,12 +52,34 @@ export const TasksSlice = createSlice({
   },
 });
 export const TasksListAction = {
-  addTask: createAction("TaskList/AddTask", function preare(type: string) {
+  removeTask: createAsyncThunk<
+    {
+      index: number;
+      type: string;
+    },
+    number,
+    { state: RootState }
+  >("TaskList/RemoveTask", async (index: number, api) => {
+    const id = TasksSliceSelector.taskIDList(api.getState())[index];
+    const type = TasksSliceSelector.taskDataById(id)(api.getState()).type;
+    window.api.removeTask(id);
+    getTaskDataHanderByType(type).removeIpc(id);
+    return { index, type: type };
+  }),
+  addTask: createAsyncThunk<
+    {
+      id: string;
+      type: string;
+    },
+    string,
+    { state: RootState; dispatch: AppDispatch }
+  >("TaskList/AddTask", async (type: string, api) => {
+    const id = String(Date.now());
+    await window.api.addTask(id, type);
+    getTaskDataHanderByType(type).addIpc(id, api.dispatch);
     return {
-      payload: {
-        id: String(Date.now()),
-        type,
-      },
+      id: id,
+      type,
     };
   }),
   setSelectedIndex: createAction<number>("TaskList/SetSelectedIndex"),
@@ -72,7 +105,11 @@ export const TasksSliceSelector = {
     ];
   },
   taskDataById: (id: string) => (state: RootState) => state.Tasks.tasks[id],
-  taskDataObjectList: (state: RootState) => Object.values(state.Tasks.tasks),
+  taskDataObjectList: createSelector(
+    (state: RootState): string[] => TasksSliceSelector.taskIDList(state),
+    (state: RootState) => state.Tasks.tasks,
+    (ids, tasks) => ids.map((id) => tasks[id])
+  ),
   selectedTaskDataObject: (state: RootState) =>
     TasksSliceSelector.taskDataObjectList(state)[
       TasksSliceSelector.selectedIndex(state)
@@ -86,9 +123,11 @@ export const TasksSliceSelector = {
     return selectedTaskDataObject.type;
   },
 
-  taskListItemData: (id: string) =>
-    createSelector(
-      (state: RootState) => TasksSliceSelector.taskDataById(id)(state),
-      (task) => getTaskDataHanderByType(task.type).getListItemData(task)
-    ),
+  taskListData: createSelector(
+    (state: RootState): TaskDataObject[] => {
+      return TasksSliceSelector.taskDataObjectList(state);
+    },
+    (tasks) =>
+      tasks.map((v) => getTaskDataHanderByType(v.type).getListItemData(v))
+  ),
 };

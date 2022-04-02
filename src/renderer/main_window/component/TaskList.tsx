@@ -9,7 +9,7 @@ const TaskList = React.forwardRef<VirtuosoHandle>(function TaskList(
   props,
   ref
 ) {
-  const ids = useAppSelector(TasksSliceSelector.taskIDList);
+  const listData = useAppSelector(TasksSliceSelector.taskListData);
   const selectedIndex = useAppSelector(TasksSliceSelector.selectedIndex);
   const dispatch = useAppDispatch();
   const setSelectedIndex = useCallback(
@@ -18,19 +18,26 @@ const TaskList = React.forwardRef<VirtuosoHandle>(function TaskList(
     },
     [dispatch]
   );
+  const removeTask = useCallback(
+    (index: number) => {
+      dispatch(TasksListAction.removeTask(index));
+    },
+    [dispatch]
+  );
   return (
     <Virtuoso
       ref={ref}
       style={{ flex: "1 1 auto" }}
-      data={ids}
+      data={listData}
       components={VirtuosoMUIComponents}
-      itemContent={(index, id) => {
+      itemContent={(index, data) => {
         return (
           <TaskListItem
-            id={id}
+            data={data}
             index={index}
             selected={selectedIndex == index}
             setSelectedIndex={setSelectedIndex}
+            removeTask={removeTask}
           />
         );
       }}

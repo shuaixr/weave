@@ -40,5 +40,9 @@ export class MainWindow {
       }
       this.taskMap.set(id, newTask);
     });
+    ipcMain.handle(TaskListIpc.REMOVE_TASK, (event, id: string) => {
+      this.taskMap.get(id).remove();
+      this.taskMap.delete(id);
+    });
   }
 }
