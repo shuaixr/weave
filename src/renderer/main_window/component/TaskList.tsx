@@ -30,6 +30,7 @@ const TaskList = React.forwardRef<VirtuosoHandle>(function TaskList(
       style={{ flex: "1 1 auto" }}
       data={listData}
       components={VirtuosoMUIComponents}
+      atTopStateChange={() => "auto"}
       itemContent={(index, data) => {
         return (
           <TaskListItem
